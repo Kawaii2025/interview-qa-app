@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# temp files
+demo.html
+pages/index2.tsx
+pages/demo.tsx
+pages/demo.html
