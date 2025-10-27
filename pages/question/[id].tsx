@@ -32,7 +32,7 @@ export default function QuestionDetail() {
     const questionId = Number(id);
 
     async function fetchData() {
-      setLoading.question = true;
+      setLoading(prev => ({ ...prev, question: true }));
       // 前端查询用 supabase 客户端
       const { data: questionData, error: questionErr } = await supabase
         .from('questions')
@@ -58,7 +58,7 @@ export default function QuestionDetail() {
         setSavedUserAnswer(answerData.content);
       }
 
-      setLoading.question = false;
+      setLoading(prev => ({ ...prev, question: false }));
     }
 
     fetchData();
@@ -71,7 +71,7 @@ export default function QuestionDetail() {
       return;
     }
 
-    setLoading.userAnswer = true;
+    setLoading(prev => ({ ...prev, userAnswer: true }));
     try {
       const response = await fetch('/api/user-answers', {
         method: 'POST',
@@ -90,7 +90,7 @@ export default function QuestionDetail() {
     } catch (error: any) {
       alert(`保存失败：${error.message}`);
     } finally {
-      setLoading.userAnswer = false;
+      setLoading(prev => ({ ...prev, userAnswer: false }));
     }
   };
 
@@ -98,7 +98,7 @@ export default function QuestionDetail() {
   const handleGetAiAnswer = async () => {
     if (!id) return;
 
-    setLoading.aiAnswer = true;
+    setLoading(prev => ({ ...prev, aiAnswer: true }));
     setAiAnswer('AI 正在思考...');
     try {
       const response = await fetch(`/api/ai-answers/${id}`);
@@ -110,7 +110,7 @@ export default function QuestionDetail() {
     } catch (error: any) {
       setAiAnswer(`获取失败：${error.message}`);
     } finally {
-      setLoading.aiAnswer = false;
+      setLoading(prev => ({ ...prev, aiAnswer: false }));
     }
   };
 

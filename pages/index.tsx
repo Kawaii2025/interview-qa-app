@@ -39,7 +39,7 @@ export default function Home() {
   const getTypeText = (type: number) => type === 1 ? '前端' : '后端';
   const getDifficultyText = (diff: number) => {
     const map = { 1: '简单', 2: '中等', 3: '困难' };
-    return map[diff] || '中等';
+    return map[diff as keyof typeof map] || '中等';
   };
 
   if (loading) return <div className="p-8">加载题目中...</div>;
