@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase-client';
 import { formatDate } from '../../lib/dateUtils';
 
 // 题目类型定义（保持不变）
-interface Question {
+export interface Question {
   id: number;
   content: string;
   type: number;
