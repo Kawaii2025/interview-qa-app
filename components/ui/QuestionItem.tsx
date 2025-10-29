@@ -216,14 +216,7 @@ export default function QuestionItem({
         <div>
           <div className="mb-6">
             <textarea 
-              // className="w-full h-48 p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-primary/30 focus:border-primary transition-all resize-none"
-              className="w-full h-48 p-4 
-         border-2 border-gray-200  <!-- ボーダー幅を2pxに増やして明確化 -->
-         rounded-lg 
-         focus:outline-none  <!-- デフォルトアウトラインを消す -->
-         focus:border-primary  <!-- フォーカス時のボーダー色（必須） -->
-         focus:ring-2 focus:ring-primary/30  <!-- リングで強調（補助） -->
-         transition-all resize-none"
+              className="w-full h-48 p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 focus:outline-none transition-all resize-none"
               placeholder="请在此输入你的答案..."
               value={answer}
               onChange={handleTextChange}
