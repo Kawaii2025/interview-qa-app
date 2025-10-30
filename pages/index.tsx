@@ -1,7 +1,6 @@
 // pages/index.tsx
 import { GetServerSideProps } from 'next';
 import { supabase } from '../lib/supabase-client';
-import { formatDate } from '../lib/dateUtils';
 
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -43,7 +42,7 @@ export default function Home({ questions, userAnswers, error }: HomePageProps) {
           </div>
           
           <div className="lg:col-span-3 space-y-6">
-            <QuestionList questions={questions} userAnswers={userAnswers} />
+            <QuestionList userAnswers={userAnswers} />
             <RelatedQuestions />
             <QuestionNavigation />
           </div>
@@ -63,19 +62,21 @@ export const getServerSideProps: GetServerSideProps = async () => {
     // 1. 获取当前用户信息
     const { data: { user } } = await supabase.auth.getUser();
     
-    // 2. 获取题目列表（根据实际字段调整查询）
-    const { data: questionsData, error: questionsError } = await supabase
-      .from('questions') // 假设表名为questions
-      .select('*')
-      .order('id', { ascending: true }); // 按创建时间正序排列
+    // // 2. 获取题目列表（根据实际字段调整查询）
+    // const { data: questionsData, error: questionsError } = await supabase
+    //   .from('questions') // 假设表名为questions
+    //   .select('*')
+    //   .order('id', { ascending: true }); // 按创建时间正序排列
       
-    if (questionsError) throw questionsError;
+    // if (questionsError) throw questionsError;
 
-     // 预格式化日期（服务端统一处理）
-    const questions = (questionsData || []).map(question => ({
-      ...question,
-      formattedCreatedAt: formatDate(question.created_at) // 服务端预格式化
-    }));
+    //  // 预格式化日期（服务端统一处理）
+    // const questions = (questionsData || []).map(question => ({
+    //   ...question,
+    //   formattedCreatedAt: formatDate(question.created_at) // 服务端预格式化
+    // }));
+
+    const questions: Question[] = [];
     
     // 3. 获取用户回答
     let userAnswers: Record<number, string> = {};
