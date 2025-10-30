@@ -58,7 +58,7 @@ export default function QuestionItem({
 }: QuestionItemProps) {
   const [activeTab, setActiveTab] = useState<'myAnswer' | 'aiAnswer'>('myAnswer');
   const [answer, setAnswer] = useState(userAnswer);
-  const [aiAnswer, setAiAnswer] = useState<string>('');
+  const [aiAnswer, setAiAnswer] = useState<string | null>(null); // null = not fetched yet
   const [isLoading, setIsLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
@@ -72,9 +72,6 @@ export default function QuestionItem({
     setIsLoading(true);
     setAiError(null);
     try {
-      // 创建supabase客户端
-    //   const supabase = createSupabaseServerClient();
-      
       // 查询ai_answers表，通过question_id关联当前题目
       const { data, error } = await supabase
         .from('ai_answers') // 假设表名为ai_answers
@@ -86,7 +83,7 @@ export default function QuestionItem({
       if (error) {
         // 如果是"未找到记录"的错误，不提示错误，允许用户重新生成
         if (error.code === 'PGRST116') {
-          setAiAnswer('');
+          setAiAnswer(''); // not found -> mark as empty
         } else {
           throw new Error(`查询失败: ${error.message}`);
         }
@@ -137,7 +134,8 @@ export default function QuestionItem({
 
   // 切换到AI回答标签时加载回答
   useEffect(() => {
-    if (activeTab === 'aiAnswer' && !aiAnswer && !isLoading) {
+    // fetch only when tab opened and we have not fetched yet (aiAnswer === null)
+    if (activeTab === 'aiAnswer' && aiAnswer === null && !isLoading) {
       fetchAiAnswer();
     }
   }, [activeTab, aiAnswer, isLoading, question.id]);
@@ -298,10 +296,10 @@ export default function QuestionItem({
               <div className="p-4 bg-danger/10 text-danger text-sm">
                 <i className="fa fa-exclamation-circle mr-1"></i> {aiError}
               </div>
-            ) : !aiAnswer ? (
-              <div className="p-4 bg-gray-50 text-gray-500 rounded-lg text-sm">
-                <i className="fa fa-info-circle-circle mr-1"></i> 暂无找到找到该题的AI回答，请点击"重新生成"
-              </div>
+            ) : aiAnswer === '' ? (
+               <div className="p-4 bg-gray-50 text-gray-500 rounded-lg text-sm">
+                 <i className="fa fa-info-circle-circle mr-1"></i> 暂无找到找到该题的AI回答，请点击"重新生成"
+               </div>
             ) : (
               <div className="prose max-w-none text-gray-700 space-y-4">
                 <ReactMarkdown

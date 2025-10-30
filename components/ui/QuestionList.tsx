@@ -25,7 +25,7 @@ export default function QuestionList({ userAnswers = {} }: QuestionListProps) {
         const { data: questionsData, error: questionsError } = await supabase
           .from('questions')
           .select('*')
-          .order('id', { ascending: true });
+          .order('created_at', { ascending: false });
 
         if (questionsError) throw questionsError;
 
