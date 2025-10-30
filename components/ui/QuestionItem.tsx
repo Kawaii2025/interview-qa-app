@@ -8,7 +8,6 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize'; // セキュリティが必要なら有効化
 import { defaultSchema } from 'hast-util-sanitize';
-import 'highlight.js/styles/github-dark.css';
 
 // 题目类型定义（保持不变）
 export interface Question {
