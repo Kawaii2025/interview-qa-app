@@ -3,6 +3,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase-client';
 import { formatDate } from '../../lib/dateUtils';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeSanitize from 'rehype-sanitize'; // セキュリティが必要なら有効化
+import { defaultSchema } from 'hast-util-sanitize';
+import 'highlight.js/styles/github-dark.css';
+
 // 题目类型定义（保持不变）
 export interface Question {
   id: number;
@@ -156,6 +163,21 @@ export default function QuestionItem({
 
   const answerLength = answer.length;
 
+  const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [
+      ...(defaultSchema.attributes?.code ?? []),
+      ['className'],
+    ],
+    pre: [
+      ...(defaultSchema.attributes?.pre ?? []),
+      ['className'],
+    ],
+  },
+};
+
   return (
     <div className={`bg-white rounded-xl card-shadow p-6 md:p-8 hover-lift question-card-${question.id}`}>
       {/* 题目头部信息（保持不变） */}
@@ -256,7 +278,7 @@ export default function QuestionItem({
       {/* AI回答区域（使用supabase直接直接查询） */}
       {activeTab === 'aiAnswer' && (
         <div>
-          <div className="bg-light rounded rounded-lg p-5 mb-6">
+          <div className="bg-light rounded-lg p-5 mb-6 leading-relaxed space-y-4">
             <div className="flex items-start space-x-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                 <i className="fa fa-robot text-primary"></i>
@@ -282,8 +304,13 @@ export default function QuestionItem({
                 <i className="fa fa-info-circle-circle mr-1"></i> 暂无找到找到该题的AI回答，请点击"重新生成"
               </div>
             ) : (
-              <div className="prose max-w-none text-gray-700 whitespace-pre-line">
-                {aiAnswer}
+              <div className="prose max-w-none text-gray-700 space-y-4">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[[rehypeSanitize, sanitizeSchema], rehypeHighlight]}
+                >
+                  {aiAnswer}
+                </ReactMarkdown>
               </div>
             )}
           </div>

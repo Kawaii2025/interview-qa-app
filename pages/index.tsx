@@ -67,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const { data: questionsData, error: questionsError } = await supabase
       .from('questions') // 假设表名为questions
       .select('*')
-      .order('created_at', { ascending: false }); // 按创建时间倒序排列
+      .order('id', { ascending: true }); // 按创建时间正序排列
       
     if (questionsError) throw questionsError;
 

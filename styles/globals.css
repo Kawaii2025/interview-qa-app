@@ -1,3 +1,5 @@
+@import 'highlight.js/styles/github-dark.css'; /* 1でテーマを変える場合でもここで読み込めます */
+
 /* styles/globals.css */
 @tailwind base;
 @tailwind components;
@@ -33,3 +35,35 @@
 body {
   @apply font-inter bg-gray-50 text-dark min-h-screen flex flex-col;
 }
+
+/* Code block spacing & readability */
+.prose pre {
+  background-color: #0b1117 !important; /* github-dark 背景に合わせる（必要に応じて調整） */
+  padding: 1rem 1.25rem !important;     /* 内側の余白を増やす */
+  border-radius: 0.5rem !important;
+  margin: 1rem 0 !important;            /* 上下の余白を増やす */
+  line-height: 1.7 !important;          /* 行間を広げる（これが重要） */
+  font-size: 0.95rem !important;
+  overflow: auto !important;
+  box-shadow: none !important;
+}
+
+/* pre > code をブロック表示にして line-height を継承 */
+.prose pre code {
+  display: block !important;
+  background: transparent !important;
+  padding: 0 !important;
+  line-height: inherit !important;
+  white-space: pre !important;
+}
+
+/* インライン code の行間調整（必要なら） */
+.prose code {
+  line-height: 1.6 !important;
+}
+
+/* highlight.js の行ごとの高さが効かない場合 */
+.prose pre code .hljs {
+  line-height: 1.7 !important;
+}
+
