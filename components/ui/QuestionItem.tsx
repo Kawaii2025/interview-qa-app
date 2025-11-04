@@ -67,33 +67,30 @@ export default function QuestionItem({
     setAnswer(userAnswer);
   }, [userAnswer]);
 
-  // 获取AI回答 - 直接查询supabase的ai_answers表
+  // 获取AI回答 - Call API to fetch AI answer
   const fetchAiAnswer = async () => {
     setIsLoading(true);
     setAiError(null);
     try {
-      // 查询ai_answers表，通过question_id关联当前题目
-      const { data, error } = await supabase
-        .from('ai_answers') // 假设表名为ai_answers
-        .select('content') // 只需要content字段
-        .eq('question_id', question.id) // 关联题目ID
-        .single(); // 只返回一条记录（一个题目对应一个AI回答）
-
-      // 处理supabase查询错误
-      if (error) {
-        // 如果是"未找到记录"的错误，不提示错误，允许用户重新生成
-        if (error.code === 'PGRST116') {
-          setAiAnswer(''); // not found -> mark as empty
-        } else {
-          throw new Error(`查询失败: ${error.message}`);
+      const res = await fetch(`/api/ai-answers/${question.id}`, {
+        method: 'GET',
+      });
+      if (!res.ok) {
+        if (res.status === 404) {
+          setAiAnswer(''); // not found
+          return;
         }
-      } else if (data) {
-        // 成功获取到回答
-        setAiAnswer(data.content);
+        const text = await res.text();
+        throw new Error(text || `请求失败: ${res.status}`);
       }
+      const json = await res.json();
+      const content = json?.data?.content ?? '';
+      setAiAnswer(content);
     } catch (err) {
       console.error('获取AI回答错误:', err);
-      setAiError(err instanceof Error ? err.message : '获取AI回答时发生错误，请稍后重试');
+      setAiError(
+        err instanceof Error ? err.message : '获取AI回答时发生错误，请稍后重试'
+      );
     } finally {
       setIsLoading(false);
     }
