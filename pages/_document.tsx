@@ -5,11 +5,12 @@ export default function Document() {
     <Html>
       <Head>
         {/* 添加Font Awesome图标库 */}
-        <link
+       <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
-          // Add crossOrigin to avoid CDN resource loading issues (optional but recommended)
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
           crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
         />
       </Head>
       <body>

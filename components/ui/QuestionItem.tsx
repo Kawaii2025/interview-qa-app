@@ -1,5 +1,6 @@
 // components/ui/QuestionItem.tsx
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { supabase } from '../../lib/supabase-client';
 import { formatDate } from '../../lib/dateUtils';
 
@@ -56,6 +57,8 @@ export default function QuestionItem({
   userAnswer = '', 
   onAnswerChange 
 }: QuestionItemProps) {
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState<'myAnswer' | 'aiAnswer'>('myAnswer');
   const [answer, setAnswer] = useState(userAnswer);
   const [aiAnswer, setAiAnswer] = useState<string | null>(null); // null = not fetched yet
@@ -72,9 +75,22 @@ export default function QuestionItem({
     setIsLoading(true);
     setAiError(null);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // リダイレクト to login page
+        router.push('/login');
+        return;
+      }
+
       const res = await fetch(`/api/ai-answers/${question.id}`, {
-        method: 'GET',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ question: question.content }),
       });
+
       if (!res.ok) {
         if (res.status === 404) {
           setAiAnswer(''); // not found
@@ -132,10 +148,10 @@ export default function QuestionItem({
   // 切换到AI回答标签时加载回答
   useEffect(() => {
     // fetch only when tab opened and we have not fetched yet (aiAnswer === null)
-    if (activeTab === 'aiAnswer' && aiAnswer === null && !isLoading) {
+    if (activeTab === 'aiAnswer' && aiAnswer === null) {
       fetchAiAnswer();
     }
-  }, [activeTab, aiAnswer, isLoading, question.id]);
+  }, [activeTab, aiAnswer, question.id]);
 
   // 其他逻辑（handleTextChange、页面加载动画等保持不变）
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -292,6 +308,16 @@ export default function QuestionItem({
             ) : aiError ? (
               <div className="p-4 bg-danger/10 text-danger text-sm">
                 <i className="fa fa-exclamation-circle mr-1"></i> {aiError}
+                  <button
+                    onClick={() => {
+                      setAiAnswer(null); // null にリセットして useEffect を再トリガー
+                      setAiError(null);
+                      fetchAiAnswer(); // 直接再フェッチを呼ぶ
+                  }}
+                  className="ml-3 px-3 py-1 bg-danger text-white rounded hover:bg-danger/90"
+                  >
+                    重试
+                  </button>
               </div>
             ) : aiAnswer === '' ? (
                <div className="p-4 bg-gray-50 text-gray-500 rounded-lg text-sm">
